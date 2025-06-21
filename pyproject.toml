@@ -1,7 +1,29 @@
 [project]
 name = "flood-monitoring"
 version = "0.1.0"
-description = "Add your description here"
+description = "Industry-ready SAR-to-Optical image translation for flood mapping."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
+
+[dependency-groups]
+core-ml = [
+    "numpy>=2.3.1",
+    "pytorch-lightning>=2.5.2",
+    "scikit-image>=0.25.2",
+    "scipy>=1.15.3",
+    "torch>=2.7.1",
+    "torchvision>=0.22.1",
+]
+geospatial = [
+    "gdal==3.8.4",
+    "geopandas>=1.1.0",
+    "rasterio>=1.4.3",
+    "shapely>=2.1.1",
+]
+mlops = [
+    "albumentations>=2.0.8",
+    "prometheus-client>=0.22.1",
+    "segmentation-models-pytorch>=0.5.0",
+    "torchmetrics>=1.7.3",
+]
