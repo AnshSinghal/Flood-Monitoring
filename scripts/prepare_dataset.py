@@ -5,12 +5,12 @@ from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 import logging
 
-# --- Setup basic logging ---
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler() # Log to console
+        logging.StreamHandler(),
+        logging.FileHandler('dataset_manifest_creation.log', mode='w')
     ]
 )
 logger = logging.getLogger(__name__)
@@ -44,12 +44,12 @@ def create_dataset_manifest(data_root, output_csv, test_size=0.15, random_state=
                 continue
 
             for s1_chip_dir, s2_chip_dir in zip(s1_chip_dirs, s2_chip_dirs):
-                s1_vv_path = os.path.join(s1_chip_dir, 'VV.tif') # Uppercase VV
-                s1_vh_path = os.path.join(s1_chip_dir, 'VH.tif') # Uppercase VH
+                s1_vv_path = os.path.join(s1_chip_dir, 'VV.tif') 
+                s1_vh_path = os.path.join(s1_chip_dir, 'VH.tif') 
                 
-                s2_b4_path = os.path.join(s2_chip_dir, 'B4.tif') # Red
-                s2_b3_path = os.path.join(s2_chip_dir, 'B3.tif') # Green
-                s2_b2_path = os.path.join(s2_chip_dir, 'B2.tif') # Blue
+                s2_b4_path = os.path.join(s2_chip_dir, 'B4.tif') 
+                s2_b3_path = os.path.join(s2_chip_dir, 'B3.tif') 
+                s2_b2_path = os.path.join(s2_chip_dir, 'B2.tif')
                 
                 s2_cloudmask_path = os.path.join(s2_chip_dir, 'LabelCloud.tif')
 
@@ -94,7 +94,6 @@ def create_dataset_manifest(data_root, output_csv, test_size=0.15, random_state=
     except Exception as e:
         logger.exception(f"An unexpected error occurred: {e}")
 
-# --- Example Usage ---
 if __name__ == '__main__':
 
     DATASET_ROOT = "data/raw/data/c2s_ms_floods/chips"
