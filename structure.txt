@@ -1,0 +1,158 @@
+.
+├── README.md
+├── data
+│   ├── processed
+│   └── raw
+│       ├── data
+│       │   └── c2s_ms_floods
+│       │       ├── Training_S1_Baseline.ipynb
+│       │       ├── chips
+│       │       │   ├── 0c7daa97-37f6-4862-867f-b3843f298d9e
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 3e71513a-ec54-4e9b-aae6-93a8a3648763
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 4567c2a2-b5f3-4a88-90ba-119bfb3eee9e
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 55d43c77-9955-4b4f-b6f0-b21e7f50a039
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 5ef4fb15-6f38-49a8-848a-82ebef8ec6f7
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 749aca10-a39b-4321-8322-100dd6f976d4
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 89b504aa-e913-46ce-9d9f-b9c48ca9b602
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 8fcb3e59-7b1b-49c9-92c4-f4ddea14d4e4
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 95eff095-c3e9-4c12-bfde-1708b7e19bae
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 975ecc1f-bc34-4005-b2df-ef45775f116d
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── befccce4-79c0-47a2-a43b-a0915486dfa4
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── c19f5f27-2b3b-4b83-8f4a-cf9275d94cdd
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── d89b6d2c-ded5-463e-81cc-13c1764df616
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── dc70be79-da19-47ee-bdee-4614bc46d610
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── e7d1917e-c069-45cf-a392-42e24aa2f4ac
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── e7e6e693-aec9-44b2-928d-80ba818b647e
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── e92c811f-ba53-4df2-aad0-afea8b733621
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   └── f59da1a3-a2f1-45b8-b975-57af1b344252
+│       │       │       ├── s1
+│       │       │       └── s2
+│       │       ├── data-processing.pdf
+│       │       ├── ms-dataset-chips
+│       │       │   ├── 0c7daa97-37f6-4862-867f-b3843f298d9e
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 3e71513a-ec54-4e9b-aae6-93a8a3648763
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 4567c2a2-b5f3-4a88-90ba-119bfb3eee9e
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 55d43c77-9955-4b4f-b6f0-b21e7f50a039
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 5ef4fb15-6f38-49a8-848a-82ebef8ec6f7
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 749aca10-a39b-4321-8322-100dd6f976d4
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 89b504aa-e913-46ce-9d9f-b9c48ca9b602
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 8fcb3e59-7b1b-49c9-92c4-f4ddea14d4e4
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 95eff095-c3e9-4c12-bfde-1708b7e19bae
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── 975ecc1f-bc34-4005-b2df-ef45775f116d
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── befccce4-79c0-47a2-a43b-a0915486dfa4
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── c19f5f27-2b3b-4b83-8f4a-cf9275d94cdd
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── d89b6d2c-ded5-463e-81cc-13c1764df616
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── dc70be79-da19-47ee-bdee-4614bc46d610
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── e7d1917e-c069-45cf-a392-42e24aa2f4ac
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── e7e6e693-aec9-44b2-928d-80ba818b647e
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   ├── e92c811f-ba53-4df2-aad0-afea8b733621
+│       │       │   │   ├── s1
+│       │       │   │   └── s2
+│       │       │   └── f59da1a3-a2f1-45b8-b975-57af1b344252
+│       │       │       ├── s1
+│       │       │       └── s2
+│       │       └── ms-dataset_README.pdf
+│       ├── s1_iw_grd_20210701T171646.tiff
+│       ├── s1_iw_grd_20210703T055051.tiff
+│       ├── s1_iw_grd_20210706T172453.tiff
+│       ├── s1_iw_grd_20210707T171552.tiff
+│       └── s1_iw_grd_20210709T055001.tiff
+├── inference.py
+├── main.py
+├── monitoring
+│   ├── docker-compose.yml
+│   └── prometheus
+│       └── prometheus.yml
+├── notebooks
+│   └── 01_data_exploration.ipynb
+├── outputs
+│   ├── checkpoints
+│   └── results
+├── pyproject.toml
+├── scripts
+│   ├── fetch_data.py
+│   ├── prepare_dataset.py
+│   └── verify_image.py
+├── src
+│   ├── __init__.py
+│   ├── config.py
+│   ├── data_loader.py
+│   ├── flood_monitoring_sar_to_optical.egg-info
+│   │   ├── PKG-INFO
+│   │   ├── SOURCES.txt
+│   │   ├── dependency_links.txt
+│   │   ├── requires.txt
+│   │   └── top_level.txt
+│   ├── losses.py
+│   ├── model.py
+│   └── train.py
+├── structure.txt
+└── uv.lock
+
+125 directories, 31 files
