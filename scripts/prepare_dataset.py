@@ -27,7 +27,6 @@ def create_dataset_manifest(data_root, output_csv, test_size=0.15, random_state=
         random_state (int): Seed for the random split for reproducibility.
     """
     try:
-        # Find all event directories (e.g., '0c7daa97-...') inside the data_root.
         event_dirs = [d for d in glob(os.path.join(data_root, '*')) if os.path.isdir(d)]
         if not event_dirs:
             logger.error(f"No event directories found in {data_root}. Please check the path.")
@@ -45,19 +44,15 @@ def create_dataset_manifest(data_root, output_csv, test_size=0.15, random_state=
                 continue
 
             for s1_chip_dir, s2_chip_dir in zip(s1_chip_dirs, s2_chip_dirs):
-                # --- MODIFIED TO MATCH YOUR FILE STRUCTURE ---
                 s1_vv_path = os.path.join(s1_chip_dir, 'VV.tif') # Uppercase VV
                 s1_vh_path = os.path.join(s1_chip_dir, 'VH.tif') # Uppercase VH
                 
-                # Paths for separate R, G, B bands for Sentinel-2
                 s2_b4_path = os.path.join(s2_chip_dir, 'B4.tif') # Red
                 s2_b3_path = os.path.join(s2_chip_dir, 'B3.tif') # Green
                 s2_b2_path = os.path.join(s2_chip_dir, 'B2.tif') # Blue
                 
-                # Correct cloud mask filename
                 s2_cloudmask_path = os.path.join(s2_chip_dir, 'LabelCloud.tif')
 
-                # Verify that all essential files exist before adding the record
                 required_files = [s1_vv_path, s1_vh_path, s2_b4_path, s2_b3_path, s2_b2_path, s2_cloudmask_path]
                 if all(os.path.exists(p) for p in required_files):
                     records.append({
@@ -82,7 +77,6 @@ def create_dataset_manifest(data_root, output_csv, test_size=0.15, random_state=
         logger.info(f"Successfully processed {len(records)} complete chip pairs.")
         df = pd.DataFrame(records)
 
-        # Create train/validation split
         logger.info(f"Creating train/validation split ({1-test_size:.0%}/{test_size:.0%})...")
         train_df, val_df = train_test_split(df, test_size=test_size, random_state=random_state)
         train_df['split'] = 'train'
@@ -102,11 +96,9 @@ def create_dataset_manifest(data_root, output_csv, test_size=0.15, random_state=
 
 # --- Example Usage ---
 if __name__ == '__main__':
-    # Make sure this path points to the directory containing the event folders (the UUIDs).
-    # Based on your tree, this is the correct path.
+
     DATASET_ROOT = "data/raw/data/c2s_ms_floods/chips"
     
-    # Path where the output CSV will be saved.
     OUTPUT_MANIFEST = "data/processed/data_manifest.csv"
 
     create_dataset_manifest(DATASET_ROOT, OUTPUT_MANIFEST)
