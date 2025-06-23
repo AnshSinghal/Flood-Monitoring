@@ -4,6 +4,7 @@ from glob import glob
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 import logging
+import re
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,16 +35,29 @@ def create_dataset_manifest(data_root, output_csv, test_size=0.15, random_state=
         logger.info(f"Found {len(event_dirs)} event directories. Starting scan...")
 
         records = []
+        # regex to extract the coordinate ID (e.g. - '01845-00514')
+        id_parser = re.compile(r'(\d{5}-\d{5})$')
         for event_dir in tqdm(event_dirs, desc="Processing events"):
-            s1_chip_dirs = sorted(glob(os.path.join(event_dir, 's1', '*')))
-            s2_chip_dirs = sorted(glob(os.path.join(event_dir, 's2', '*')))
+            s1_chip_dirs = glob(os.path.join(event_dir, 's1', '*'))
+            s2_chip_dirs = glob(os.path.join(event_dir, 's2', '*'))
 
-            if len(s1_chip_dirs) != len(s2_chip_dirs):
-                logger.warning(f"Mismatch in number of chips for event {os.path.basename(event_dir)}: "
-                               f"{len(s1_chip_dirs)} S1 chips vs {len(s2_chip_dirs)} S2 chips. Skipping event.")
+            # Create dictionaries mapping the unique ID to the full path
+            s1_map = {id_parser.search(os.path.basename(p)).group(1): p for p in s1_chip_dirs if id_parser.search(os.path.basename(p))}
+            s2_map = {id_parser.search(os.path.basename(p)).group(1): p for p in s2_chip_dirs if id_parser.search(os.path.basename(p))}
+
+            common_ids = s1_map.keys() & s2_map.keys()
+
+            if not common_ids:
+                logger.warning(f"No matching chip IDs found for event {os.path.basename(event_dir)}. Skipping event.")
                 continue
 
-            for s1_chip_dir, s2_chip_dir in zip(s1_chip_dirs, s2_chip_dirs):
+            for chip_id in common_ids:
+                s1_chip_dir = s1_map[chip_id]
+                s2_chip_dir = s2_map[chip_id]
+                if not os.path.isdir(s1_chip_dir) or not os.path.isdir(s2_chip_dir):
+                    logger.warning(f"One of the chip directories is not a valid directory: "
+                                   f"S1: {s1_chip_dir}, S2: {s2_chip_dir}. Skipping.")
+                    continue
                 s1_vv_path = os.path.join(s1_chip_dir, 'VV.tif') 
                 s1_vh_path = os.path.join(s1_chip_dir, 'VH.tif') 
                 
