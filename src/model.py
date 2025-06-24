@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from torchvision.models import resnet34, ResNet34_Weights, vgg19, VGG19_Weights
+from torchvision.models import resnet34, ResNet34_Weights
 
 class UNetGenerator(nn.Module):
     def __init__(self, in_channels=2, out_channels=3):
