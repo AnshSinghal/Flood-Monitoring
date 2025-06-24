@@ -68,8 +68,8 @@ def apply_speckle_filter(sar_image, window_size=7):
         np.ndarray: Filtered SAR image with shape (2, height, width).
     '''
     filtered_sar = []
-    for i in range(sar_image.shape):
-        filtered_sar.append(lee(sar_image[i], sigma=window_size))
+    for i in range(sar_image.shape[0]):
+        filtered_sar.append(lee(sar_image[i], M=window_size))
     return np.stack(filtered_sar, axis=0)
 
 def normalize_sar(sar_img):
