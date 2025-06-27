@@ -2,6 +2,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models import vgg19, VGG19_Weights
+import logging
+from logging_utils import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 #1. Adversarial Loss
 class LSGANLoss(nn.Module):
@@ -20,6 +25,7 @@ class LSGANLoss(nn.Module):
         self.loss = nn.MSELoss()
 
     def __call__(self, prediction, target_is_real):
+        logger.debug("LSGANLoss called, target_is_real=%s", target_is_real)
         if target_is_real:
             target_tensor = self.real_label
         else:
@@ -48,6 +54,7 @@ class PerceptualLoss(nn.Module):
         self.register_buffer('std', torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
 
     def forward(self, gen_img, real_img):
+        logger.debug("PerceptualLoss forward with gen_img shape %s", tuple(gen_img.shape))
         # VGG expects 3-channel input normalized with ImageNet stats
         # Our images are in [-1, 1], so we scale to [0, 1] first
         gen_img = (gen_img + 1) / 2
@@ -94,6 +101,7 @@ class SpecklePreservationLoss(nn.Module):
         return torch.sqrt(grad_x**2 + grad_y**2 + 1e-6)
 
     def forward(self, gen_img, sar_img):
+        logger.debug("SpecklePreservationLoss forward")
         grad_gen = self.get_gradient_magnitude(gen_img)
         grad_sar = self.get_gradient_magnitude(sar_img)
 
@@ -116,7 +124,8 @@ class WaterIndexConsistencyLoss(nn.Module):
         self.loss = nn.BCEWithLogitsLoss()
 
     def forward(self, gen_img, sar_img):
-         # Step 1: Create a "weak" water mask from the SAR VH channel (channel 1)
+        logger.debug("WaterIndexConsistencyLoss forward")
+        # Step 1: Create a "weak" water mask from the SAR VH channel (channel 1)
         # Denormalize SAR from [-1, 1] -> [0, 1] -> [-25, 0] dB range
         sar_vh_db = ((sar_img[:, 1:2, :, :] + 1) / 2) * 25 - 25
         sar_water_mask = (sar_vh_db < self.sar_water_threshold_db).float()

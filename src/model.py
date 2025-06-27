@@ -1,6 +1,11 @@
 import torch
 import torch.nn as nn
 from torchvision.models import resnet34, ResNet34_Weights
+import logging
+from logging_utils import setup_logging
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 class UNetGenerator(nn.Module):
     def __init__(self, in_channels=2, out_channels=3):
@@ -40,6 +45,7 @@ class UNetGenerator(nn.Module):
         )
 
     def forward(self, x):
+        logger.debug("UNetGenerator forward with input shape %s", tuple(x.shape))
         e1 = self.encoder1(x)
         e2 = self.encoder2(e1)
         e3 = self.encoder3(e2)
@@ -87,5 +93,6 @@ class PatchGANDiscriminator(nn.Module):
         )
 
     def forward(self, sar_img, opt_img):
+        logger.debug("PatchGANDiscriminator forward with SAR shape %s and OPT shape %s", tuple(sar_img.shape), tuple(opt_img.shape))
         img_input = torch.cat([sar_img, opt_img], dim=1)  # Concatenate SAR and optical images
         return self.model(img_input)  # Forward pass through the discriminator

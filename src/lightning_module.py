@@ -2,9 +2,16 @@ import torch
 import pytorch_lightning as pl
 from model import UNetGenerator, PatchGANDiscriminator
 from losses import LSGANLoss, PerceptualLoss, SpecklePreservationLoss, WaterIndexConsistencyLoss
+import logging
+from logging_utils import setup_logging
+import wandb
+
+setup_logging()
+logger = logging.getLogger(__name__)
 
 class SAR2OpticalGAN(pl.LightningModule):
     def __init__(self, hparams):
+        logger.info("Initialising SAR2OpticalGAN model")
         super().__init__()
         self.save_hyperparameters(hparams)
 
@@ -20,67 +27,74 @@ class SAR2OpticalGAN(pl.LightningModule):
         self.validation_z = None  # Placeholder for validation input
 
     def forward(self, sar_img):
+        logger.debug("Forward pass with SAR input shape %s", tuple(sar_img.shape))
         '''
         Forward pass through the generator.
         '''
         return self.generator(sar_img)
     
     def training_step(self, batch, batch_size, optimizer_idx):
-        sar_img, opt_img = batch
+        logger.debug("Training step (optimizer_idx=%s)", optimizer_idx)
+        try:
+            sar_img, opt_img = batch
 
-        if optimizer_idx == 0:
-            generated_opt = self(sar_img)
+            if optimizer_idx == 0:
+                generated_opt = self(sar_img)
 
-            pred_fake = self.discriminator(sar_img, generated_opt)
-            loss_g_adv = self.adv_loss(pred_fake, target_is_real=True) #Fool the discriminator
+                pred_fake = self.discriminator(sar_img, generated_opt)
+                loss_g_adv = self.adv_loss(pred_fake, target_is_real=True) #Fool the discriminator
 
-            #Reconstruction and Physics Aware loss
-            loss_g_l1 = self.l1_loss(generated_opt, opt_img)
-            loss_g_perc = self.perceptual_loss(generated_opt, opt_img)
-            loss_g_speckle = self.speckle_loss(generated_opt, sar_img)
-            loss_g_water = self.water_loss(generated_opt, sar_img)
+                #Reconstruction and Physics Aware loss
+                loss_g_l1 = self.l1_loss(generated_opt, opt_img)
+                loss_g_perc = self.perceptual_loss(generated_opt, opt_img)
+                loss_g_speckle = self.speckle_loss(generated_opt, sar_img)
+                loss_g_water = self.water_loss(generated_opt, sar_img)
 
-            #Total generator loss
-            loss_g = (
-                loss_g_adv * self.hparams.lambda_adv +
-                loss_g_l1 * self.hparams.lambda_l1 +
-                loss_g_perc * self.hparams.lambda_perc +
-                loss_g_speckle * self.hparams.lambda_speckle +
-                loss_g_water * self.hparams.lambda_water
-            )
+                #Total generator loss
+                loss_g = (
+                    loss_g_adv * self.hparams.lambda_adv +
+                    loss_g_l1 * self.hparams.lambda_l1 +
+                    loss_g_perc * self.hparams.lambda_perc +
+                    loss_g_speckle * self.hparams.lambda_speckle +
+                    loss_g_water * self.hparams.lambda_water
+                )
 
-            self.log_dict({
-                'loss_g': loss_g,
-                'loss_g_adv': loss_g_adv,
-                'loss_g_l1': loss_g_l1,
-                'loss_g_perc': loss_g_perc,
-                'loss_g_speckle': loss_g_speckle,
-                'loss_g_water': loss_g_water
-            })
-            return loss_g
-        
-        if optimizer_idx == 1:
-            generated_opt = self(sar_img).detach() # Detach to avoid backprop to generator
+                self.log_dict({
+                    'loss_g': loss_g,
+                    'loss_g_adv': loss_g_adv,
+                    'loss_g_l1': loss_g_l1,
+                    'loss_g_perc': loss_g_perc,
+                    'loss_g_speckle': loss_g_speckle,
+                    'loss_g_water': loss_g_water
+                })
+                return loss_g
+            
+            if optimizer_idx == 1:
+                generated_opt = self(sar_img).detach() # Detach to avoid backprop to generator
 
-            #real image loss
-            pred_real = self.discriminator(sar_img, opt_img)
-            loss_d_real = self.adv_loss(pred_real, target_is_real=True)
+                #real image loss
+                pred_real = self.discriminator(sar_img, opt_img)
+                loss_d_real = self.adv_loss(pred_real, target_is_real=True)
 
-            #fake image loss
-            pred_fake = self.discriminator(sar_img, generated_opt)
-            loss_d_fake = self.adv_loss(pred_fake, target_is_real=False)
+                #fake image loss
+                pred_fake = self.discriminator(sar_img, generated_opt)
+                loss_d_fake = self.adv_loss(pred_fake, target_is_real=False)
 
-            #Total discriminator loss
-            loss_d = (loss_d_real + loss_d_fake) * 0.5
+                #Total discriminator loss
+                loss_d = (loss_d_real + loss_d_fake) * 0.5
 
-            self.log_dict({
-                'loss_d': loss_d,
-                'loss_d_real': loss_d_real,
-                'loss_d_fake': loss_d_fake
-            }, prog_bar=True)
-            return loss_d
+                self.log_dict({
+                    'loss_d': loss_d,
+                    'loss_d_real': loss_d_real,
+                    'loss_d_fake': loss_d_fake
+                }, prog_bar=True)
+                return loss_d
+        except Exception as e:
+            logger.exception("Exception during training_step: %s", str(e))
+            raise
         
     def visualization_step(self, batch, batch_idx):
+        logger.debug("Visualization step at batch_idx=%s", batch_idx)
         sar_img, opt_img = batch
         generated_opt = self(sar_img)
 
@@ -91,7 +105,8 @@ class SAR2OpticalGAN(pl.LightningModule):
             self.validation_z = batch
 
     def on_validation_epoch_end(self):
-       #log images to weights and biases
+        logger.debug("Validation epoch end")
+        #log images to weights and biases
         if self.logger and self.validation_z is not None:
            sar_img, opt_img = self.validation_z
            generated_opt = self(sar_img.to(self.device))
@@ -109,6 +124,7 @@ class SAR2OpticalGAN(pl.LightningModule):
         self.validation_z = None # Reset for next epoch
 
     def configure_optimizers(self):
+        logger.info("Configuring optimizers and schedulers")
         '''
         Configure optimizers and learning rate schedulers.
         '''
