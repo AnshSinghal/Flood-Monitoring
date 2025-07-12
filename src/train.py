@@ -1,8 +1,7 @@
-import torch
 import yaml
 from argparse import ArgumentParser, Namespace
 from pytorch_lightning import Trainer
-from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
+from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor, EarlyStopping
 from lightning.pytorch.loggers import WandbLogger
 import logging
 from logging_utils import setup_logging
@@ -10,11 +9,7 @@ from logging_utils import setup_logging
 from lightning_module import SAR2OpticalGAN
 from datamodule import SARDataModule
 
-from model import UNetGenerator, PatchGANDiscriminator
-from losses import PerceptualLoss, LSGANLoss, SpecklePreservationLoss, WaterIndexConsistencyLoss
-import pytorch_lightning as pl
-
-# Setup logging once the module is imported as a script.
+from logging_utils import setup_logging
 setup_logging()
 logger = logging.getLogger(__name__)
 
@@ -31,12 +26,16 @@ def main(hparams):
     logger.info("Creating model checkpoint callback")
     checkpoint_callback = ModelCheckpoint(
         dirpath=f"checkpoints/{hparams.run_name}",
-        filename='{epoch:02d}-{val_psnr:.2f}',
+        filename='{epoch:02d}-{val_psnr:.4f}',
         save_top_k=3,
         verbose=True,
-        monitor='val/psnr', # Monitor a validation metric like PSNR
-        mode='max'
+        monitor='val/psnr',
+        every_n_epochs=1,
+        mode='max',
+        save_last=True
     )
+    early_stopping = EarlyStopping(monitor='train_loss/generator_total', mode='min', patience=10, verbose=True)
+
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
     logger.info("Instantiating GAN model and datamodule")
@@ -47,9 +46,11 @@ def main(hparams):
     trainer = Trainer(
         max_epochs=hparams.max_epochs,
         logger=wandb_logger,
-        callbacks=[checkpoint_callback, lr_monitor],
+        check_val_every_n_epoch=5,
+        callbacks=[checkpoint_callback, early_stopping, lr_monitor],
         accelerator=hparams.accelerator,
-        devices=1,
+        devices=2,
+        strategy="auto",
         precision=hparams.precision,
         log_every_n_steps=hparams.log_every_n_steps,
     )
@@ -59,7 +60,6 @@ def main(hparams):
 
     logger.debug("Closing W&B experiment")
     wandb_logger.experiment.finish()
-
 
 if __name__ == '__main__':
     parser = ArgumentParser()

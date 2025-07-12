@@ -6,15 +6,11 @@ from tqdm import tqdm
 import logging
 import re
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('dataset_manifest_creation.log', mode='w')
-    ]
-)
+from src.logging_utils import setup_logging
+
+setup_logging()
 logger = logging.getLogger(__name__)
+
 
 def create_dataset_manifest(data_root, output_csv, test_size=0.15, random_state=42):
     """

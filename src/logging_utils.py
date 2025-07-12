@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 
 
-def setup_logging(log_level: int = logging.INFO, log_dir: str | None = None, log_file: str | None = None):
+def setup_logging(log_level: int = logging.DEBUG, log_dir: str | None = None, log_file: str | None = None):
     """Configure root logger with console and optional file handlers.
 
     Parameters

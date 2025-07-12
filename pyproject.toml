@@ -24,6 +24,7 @@ dependencies = [
     "tqdm>=4.65.0",
     "scikit-learn>=1.7.0",
     "albumentations>=2.0.8",
+    "lightning>=2.5.2",
 ]
 
 [project.optional-dependencies]

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🌊 Physics-Aware Flood Mapping using Multi-Channel Conditional GANs
 > A deep learning-based flood monitoring pipeline that integrates physics-inspired loss functions, water index constraints, and structured generation, trained on real-world Sentinel-1 and Sentinel-2 pairs.
 
@@ -16,6 +17,11 @@ This project proposes a **physics-aware SAR-to-Optical generation framework for 
 * **Custom Generator/Discriminator**: Modified U-Net + PatchGAN.
 * **Speckle-Aware Texture Loss**: Preserves fine SAR edges in RGB.
 * **EMA & TTUR**: Training stabilized with exponential moving average and two time-scale updates.
+=======
+# Flood-GAN: A Physics-Aware Generative Adversarial Network for SAR-to-Optical Flood Mapping
+
+This repository contains the implementation of **Flood-GAN**, a novel multi-task framework for translating Synthetic Aperture Radar (SAR) imagery into cloud-free optical images, with a specialized focus on accurate flood water delineation. Unlike conventional image-to-image translation models, Flood-GAN is architected with a deep understanding of remote sensing physics and the specific requirements of hydrological analysis.
+>>>>>>> eea23c5 (final project)
 
 ---
 
