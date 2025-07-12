@@ -132,7 +132,6 @@ sar-colorization/
 
 * Isola et al., "Image-to-Image Translation with Conditional Adversarial Networks", CVPR 2017 \[[Paper](https://arxiv.org/abs/1611.07004)]
 * Zhang et al., "Understanding Deep Learning Techniques for Remote Sensing Image Analysis", ISPRS 2019
-* Your custom implementation and design innovations
 
 ---
 
